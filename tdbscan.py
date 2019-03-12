@@ -1,6 +1,6 @@
 from haversine import haversine
 
-def TDBSCAN666_(list_coordinates, minPoints, Eps, CEps, stop_minPoints, stop_Eps, stop_CEps):
+def TDBSCAN(list_coordinates, minPoints, Eps, CEps, stop_minPoints, stop_Eps, stop_CEps, move_ability):
   """
   list_coordinates contains list of 2-dimensional tuples (index, (lat, lon))
   
@@ -108,7 +108,7 @@ def TDBSCAN666_(list_coordinates, minPoints, Eps, CEps, stop_minPoints, stop_Eps
       coordinates.append(list_coordinates[each][1])
       #format will be in index, (lat, lon)
       tuple_array.append(list_coordinates[each])
-    if moveability(coordinates) > 0.95:
+    if moveability(coordinates) > move_ability:
       key_exceed.append(key)
     else:
       move_dict_cluster[key] = tuple_array
