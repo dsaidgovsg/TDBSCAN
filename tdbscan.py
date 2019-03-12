@@ -113,10 +113,6 @@ def TDBSCAN(list_coordinates, minPoints, Eps, CEps, stop_minPoints, stop_Eps, st
     else:
       move_dict_cluster[key] = tuple_array
 
-
-  main_label = [0] * len(list_coordinates) 
-  dict_stop = {}
-  count = 0
   for key,value in move_dict_cluster.items():
     dict_cluster, dummy_label = main_run(value, stop_Eps, stop_CEps, stop_minPoints)
     if len(dict_cluster) > 0:
