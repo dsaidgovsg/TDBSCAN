@@ -1,8 +1,12 @@
+[![python versions](https://img.shields.io/badge/python-3.5-blue.svg)]
+
 TDBSCAN
 ======
 Python implementation of [TDBSCAN: Spatiotemporal Density
-Clustering](https://online-journals.org/index.php/i-joe/article/view/3881/0) with [move ability](https://www.researchgate.net/publication/282545453_Identification_of_activity_stop_locations_in_GPS_trajectories_by_density-based_clustering_method_combined_with_support_vector_machines) metrics
+Clustering(Chen W, Ji M, Wang J)](https://online-journals.org/index.php/i-joe/article/view/3881/0) with [move ability(Luo, Ting, Xinwei Zheng, Guangluan Xu, Kun Fu, and Wenjuan Ren)](file:///Users/tankaiwei/Downloads/ijgi-06-00063-v2.pdf) metrics
+
+
 
 Author
 ======
-Kai
+- [@Kai] (https://github.com/kitcatkai)
