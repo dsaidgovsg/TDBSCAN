@@ -1,4 +1,4 @@
-[![python versions](https://img.shields.io/badge/python-3.5-blue.svg)]
+![python versions](https://img.shields.io/badge/python-3.5-blue.svg)
 
 TDBSCAN
 ======
@@ -9,4 +9,4 @@ Clustering(Chen W, Ji M, Wang J)](https://online-journals.org/index.php/i-joe/ar
 
 Author
 ======
-- [@Kai] (https://github.com/kitcatkai)
+- [@Kai](https://github.com/kitcatkai)
