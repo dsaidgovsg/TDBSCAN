@@ -1,4 +1,4 @@
-![python versions](https://img.shields.io/badge/python-3.5-blue.svg)
+![python versions](https://img.shields.io/badge/python-3.6.4-blue.svg)
 
 TDBSCAN
 ======
