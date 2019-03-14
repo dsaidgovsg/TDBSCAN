@@ -134,6 +134,18 @@ def t_dbscan(
             return 0
         return traj_direct_dist(cluster) / traj_curve_dist(cluster)
 
+    def find_key_with_the_highest_count(dict_cluster):
+        """
+        Function to return key that has the highest number of counts
+
+        Parameters:
+          dict_cluster a dictionary of cluster id(key) and coordinates' index(value)
+
+        Return:
+          key with the highest number of counts
+        """
+        return max(dict_cluster, key=lambda k: len(dict_cluster[k]))
+
     def main_run(inner_list_coordinates, eps, ceps, min_points):
         """
         Function that returns t_dbscan function
@@ -200,8 +212,8 @@ def t_dbscan(
         dict_cluster = main_run(
             value, stop_eps, stop_ceps, stop_min_points)
         if dict_cluster:
-            main_label[dict_cluster[max(
-                dict_cluster, key=lambda k: len(dict_cluster[k]))][0]] = 1
+            main_label[dict_cluster[find_key_with_the_highest_count(
+                dict_cluster)][0]] = 1
 
     return main_label
 
