@@ -1,112 +1,169 @@
+"""
+Python implementation of t_dbscan
+"""
 from haversine import haversine
 
 
-def TDBSCAN(
+def t_dbscan(
         list_coordinates,
-        minPoints,
-        Eps,
-        CEps,
-        stop_minPoints,
-        stop_Eps,
-        stop_CEps,
+        min_points,
+        eps,
+        ceps,
+        stop_min_points,
+        stop_eps,
+        stop_ceps,
         move_ability):
     """
-    list_coordinates contains list of 2-dimensional tuples (index, (lat, lon))
+    Function to find the stops from the coordinates
 
+    Parameters:
+      list_coordinates contains a list of 2-dimensional tuples (index, (lat, lon))
+      min_points the number of minimum points
+      eps the first search radius in meters
+      ceps the second search radius in meters
+      stop_min_points the number of minimum points for the stop search
+      stop_eps the first stop search radius in meters
+      stop_ceps the second stop search radius in meters
+      moveability the move metrics that range from 0 to 1
+
+    Returns:
+      main_label: A list of binary label with 1 as stop
     """
-    def expandCluster(
+    def expand_cluster(
             result_neighbors,
             cluster_id,
             label,
-            Eps,
-            CEps,
+            eps,
+            ceps,
             min_index_offset,
             inner_list_coordinates):
-        count = 1
+        """
+        Function to include more coordinates into the cluster
+
+        Parameters:
+          result_neighbors contains a list of 2-dimensional tuples (index, (lat, lon))
+          cluster id is the value of the cluster id
+          label is a list of cluster id
+          eps the first search radius in meters
+          ceps the second search radius in meters
+          min_index_offset is the index of the first element
+          inner_list_coordiantes contains a list of 2-dimensional tuples (index, (lat, lon))
+        """
+        count = 0
         while count < len(result_neighbors):
             point = result_neighbors[count]
-            index, coordinates = point
+            index = point[0]
             if label[index] == -1:
                 label[index] = cluster_id
             elif label[index] == 0:
                 label[index] = cluster_id
-                expandingCluster = getNeighbors(
+                expanding_cluster = get_neighbors(
                     result_neighbors[count],
-                    Eps,
-                    CEps,
+                    eps,
+                    ceps,
                     inner_list_coordinates,
                     min_index_offset)
-                if (len(expandingCluster) >= minPoints):
-                    result_neighbors = result_neighbors + expandingCluster
+                if len(expanding_cluster) >= min_points:
+                    result_neighbors = result_neighbors + expanding_cluster
             count += 1
 
-    def getNeighbors(each, Eps, CEps, list_coordinates, min_index_offset):
+    def get_neighbors(each, eps, ceps, list_coordinates, min_index_offset):
+        """
+        Function to find coordinates that satisfy the search radius
 
-        Eps_km = Eps / 1000
-        CEps_km = CEps / 1000
+        Parameters:
+          each contains a 2-dimensional tuple in this format, (index, (lat, lon))
+          eps the first search radius in meters
+          ceps the second search radius in meters
+          list_coordiantes contains a list of 2-dimensional tuples (index, (lat, lon))
+          min_index_offset is the index of the first element
+        """
+        eps_km = eps / 1000
+        ceps_km = ceps / 1000
         index, coordinates = each
         result = [each]
         i = index - min_index_offset + 1
         while i < len(list_coordinates):
-            index_, coordinates_ = list_coordinates[i]
-            if haversine(coordinates, coordinates_) <= Eps_km:
+            coordinates_ = list_coordinates[i][1]
+            if haversine(coordinates, coordinates_) <= eps_km:
                 result.append(list_coordinates[i])
-            elif haversine(coordinates, coordinates_) >= CEps_km:
+            elif haversine(coordinates, coordinates_) >= ceps_km:
                 break
             i += 1
         return result
 
-    def trajDirectDist(cluster):
+    def traj_direct_dist(cluster):
         """
-        trajDirectDist takes in a list of temporal ordered coordinates and calculate the haversine distance from the start and end
+        Function to calculate the haversine distance from the first and last element
+
+        Parameters:
+          cluster is a list of tuples in this format, (lat,lon)
+
+        Return:
+          Distance in km
         """
         return haversine(cluster[0], cluster[-1])
 
-    def trajCurveDist(cluster):
+    def traj_curve_dist(cluster):
         """
-        trajCurveDist takes in a list of temporal ordered coordinates and calculate the curve distance, as defined by the distance in between each   coordinates
+        Function to calculate the curved distance
+
+        Parameters:
+          cluster is a list of tuples in this format, (lat,lon)
+
+        Return:
+          Distance in km
         """
         total_dist = 0
-        count = 0
-        while count < len(cluster) - 1:
-            total_dist += haversine(cluster[count], cluster[count + 1])
-            count += 1
+        for index, each in enumerate(cluster):
+            if index < len(cluster) - 1:
+                total_dist += haversine(each, cluster[index + 1])
         return total_dist
 
     def moveability(cluster):
-        if trajCurveDist(cluster) == 0:
+        """
+        Function to calculate the moveability metrics
+
+        Parameters:
+          cluster is a list of tuples in this format, (lat,lon)
+
+        Return:
+          Metrics between 0 and 1
+        """
+        if traj_curve_dist(cluster) == 0:
             return 0
-        else:
-            return trajDirectDist(cluster) / trajCurveDist(cluster)
+        return traj_direct_dist(cluster) / traj_curve_dist(cluster)
 
-    def check_for_key_with_highest_count(dic_cluster):
-        max_val = 0
-        max_key = 0
-        for key, value in dic_cluster.items():
-            if len(value) > max_val:
-                max_val = len(value)
-                max_key = key
-        return dic_cluster[max_key][0]
+    def main_run(inner_list_coordinates, eps, ceps, min_points):
+        """
+        Function that returns t_dbscan function
 
-    def main_run(inner_list_coordinates, Eps, CEps, minPoints):
+        Parameters:
+          list_coordiantes contains a list of 2-dimensional tuples (index, (lat, lon))
+          eps the first search radius in meters
+          ceps the second search radius in meters
+          min_points the minimum number of points to be considered as a cluster
 
+        Return:
+          dict_cluster a dictionary of cluster id(key) and coordinates' index(value)
+        """
         label = [0] * (len(list_coordinates) + 1)
         cluster_id = 1
         min_index_offset = inner_list_coordinates[0][0]
 
         for each in inner_list_coordinates:
-            index, coordinates = each
-            result_neighbors = getNeighbors(
-                each, Eps, CEps, inner_list_coordinates, min_index_offset)
-            if (label[index] == 0):
-                if len(result_neighbors) >= minPoints:
+            index = each[0]
+            result_neighbors = get_neighbors(
+                each, eps, ceps, inner_list_coordinates, min_index_offset)
+            if label[index] == 0:
+                if len(result_neighbors) >= min_points:
                     label[index] = cluster_id
-                    expandCluster(
+                    expand_cluster(
                         result_neighbors,
                         cluster_id,
                         label,
-                        Eps,
-                        CEps,
+                        eps,
+                        ceps,
                         min_index_offset,
                         inner_list_coordinates)
                     cluster_id += 1
@@ -122,7 +179,7 @@ def TDBSCAN(
 
         return dict_cluster
 
-    dict_cluster = main_run(list_coordinates, Eps, CEps, minPoints)
+    dict_cluster = main_run(list_coordinates, eps, ceps, min_points)
 
     key_exceed = []
     move_dict_cluster = {}
@@ -131,9 +188,8 @@ def TDBSCAN(
     for key, value in dict_cluster.items():
         coordinates = []
         tuple_array = []
-        for index, each in enumerate(value):
+        for each in value:
             coordinates.append(list_coordinates[each][1])
-            # format will be in index, (lat, lon)
             tuple_array.append(list_coordinates[each])
         if moveability(coordinates) > move_ability:
             key_exceed.append(key)
@@ -141,9 +197,16 @@ def TDBSCAN(
             move_dict_cluster[key] = tuple_array
 
     for key, value in move_dict_cluster.items():
-        dict_cluster, dummy_label = main_run(
-            value, stop_Eps, stop_CEps, stop_minPoints)
-        if len(dict_cluster) > 0:
-            main_label[check_for_key_with_highest_count(dict_cluster)] = 1
+        dict_cluster = main_run(
+            value, stop_eps, stop_ceps, stop_min_points)
+        if dict_cluster:
+            main_label[dict_cluster[max(
+                dict_cluster, key=lambda k: len(dict_cluster[k]))][0]] = 1
 
     return main_label
+
+
+if __name__ == "__main__":
+    TEST_COORDINATES = [(1, (1.348378, 103.737931)),
+                        (2, (1.348378, 103.737931)), (3, (1.348378, 103.737931))]
+    t_dbscan(TEST_COORDINATES, 2, 50, 150, 2, 10, 30, 0.95)
