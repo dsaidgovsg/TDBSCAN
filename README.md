@@ -11,6 +11,11 @@ Author
 ======
 - [@Kai](https://github.com/kitcatkai)
 
+Credits
+======
+Inspired from [@jayachithra](https://github.com/jayachithra) with changes to additional search radius, addition of stops based on highest number of counts, and move ability metrics
+https://github.com/jayachithra/T-DBSCAN/blob/master/tdbscan.py
+
 Contributing
 ======
 We welcome contributions to code open sourced by the Government Technology Agency of Singapore. All contributors will be asked to sign a Contributor License Agreement (CLA) in order to ensure that everybody is free to use their contributions.
