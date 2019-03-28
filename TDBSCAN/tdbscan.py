@@ -75,7 +75,7 @@ def t_dbscan(
           each contains a 2-dimensional tuple in this format, (index, (lat, lon))
           eps the first search radius in meters
           ceps the second search radius in meters
-          list_coordiantes contains a list of 2-dimensional tuples (index, (lat, lon))
+          list_coordinates contains a list of 2-dimensional tuples (index, (lat, lon))
           min_index_offset is the index of the first element
         """
         eps_km = eps / 1000
@@ -139,7 +139,7 @@ def t_dbscan(
         Function that returns t_dbscan function
 
         Parameters:
-          list_coordiantes contains a list of 2-dimensional tuples (index, (lat, lon))
+          list_coordinates contains a list of 2-dimensional tuples (index, (lat, lon))
           eps the first search radius in meters
           ceps the second search radius in meters
           min_points the minimum number of points to be considered as a cluster
